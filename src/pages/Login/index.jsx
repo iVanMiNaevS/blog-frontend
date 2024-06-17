@@ -15,7 +15,6 @@ export const Login = () => {
 	const {
 		register,
 		handleSubmit,
-		setError,
 		formState: { errors, isValid },
 	} = useForm({
 		defaultValues: {
@@ -25,9 +24,16 @@ export const Login = () => {
 		mode: "onChange",
 	});
 
-	function onSubmit(values) {
-		dispatch(fetchUserData(values));
+	async function onSubmit(values) {
+		const data = await dispatch(fetchUserData(values));
+		if (!data.payload) {
+			return alert("Не удалось зарегестрироваться");
+		}
+		if ("token" in data.payload) {
+			window.localStorage.setItem("token", data.payload.token);
+		}
 	}
+
 	if (isAuth) {
 		return <Navigate to={"/"} />;
 	}
